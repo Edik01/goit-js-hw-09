@@ -1,5 +1,4 @@
 import flatpickr from 'flatpickr';
-
 import 'flatpickr/dist/flatpickr.min.css';
 
 const inputEl = document.querySelector(`#datetime-picker`);
@@ -10,6 +9,7 @@ const spanMinutesEl = document.querySelector(`[data-minutes]`);
 const spanSecondsEl = document.querySelector(`[data-seconds]`);
 
 btnEl.disabled = true;
+inputEl.disabled = false; // Enable the input by default
 
 const options = {
   enableTime: true,
@@ -31,11 +31,17 @@ btnEl.addEventListener(`click`, onClick);
 
 function onClick() {
   const date = new Date(inputEl.value).getTime();
+
+  btnEl.disabled = true; // Disable the button when the timer starts
+  inputEl.disabled = true; // Disable the input when the timer starts
+
   let timerId = setInterval(() => {
     const deltaTime = date - Date.now();
     if (deltaTime < 1000) {
-      clearInterval(deltaTime);
+      clearInterval(timerId);
       updateTime();
+      btnEl.disabled = false; // Enable the button when the timer stops
+      inputEl.disabled = false; // Enable the input when the timer stops
       return;
     }
 
@@ -67,11 +73,8 @@ function convertMs(ms) {
   const day = hour * 24;
 
   const days = Math.floor(ms / day);
-
   const hours = Math.floor((ms % day) / hour);
-
   const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
